@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+<head>
+<title>Vending Machine Replinshment Items</title>
+<meta charset="utf-8" />
+<meta name="format-detection" content="telephone=no" />
+<meta name="msapplication-tap-highlight" content="no" />
+<!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+<meta name="viewport"
+	content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+<link rel="stylesheet" type="text/css" href="css/index.css" />
+<script type="text/javascript"
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js "></script>
+
+<script type="text/javascript" src="js/jquery.jsonp.js"></script>
+<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript">
+     
+        function loadValues() {
+            $("#container").fadeIn(2000);
+        	document.getElementById("container").style.display="block";
+        	document.getElementById("regionList").selectedIndex = 0;
+        	hideOnLoad();
+        }
+      
+        function hideOnLoad() {
+        	alert("Hide");
+        	$("#location").hide();
+        	$("#name").hide();
+        	
+        }  
+        
+        $(document).ready(function(){
+           alert("Hello")
+          
+		     var jsonData = $.ajax({
+		         url:'http://m2mdemo.cloudapp.net:5001/ReplenishmentService/getRegion',
+		         dataType:"json",
+		         type: "get",
+		         async : false,
+		         
+		         complete:function(){
+		         console.log('process complete')
+		        },
+	              success:function(jsonData,status){
+	            	  var select = $('#regionList');
+	            	  select.html('');
+	            	  select.append('<option id="0" selected="selected">--Select Region--</option>')
+	                  $.each(jsonData.RegionData, function(key, val) {
+	                	  //alert(val._id)
+	                	  select.append('<option id="' + val.resourceid + '">' + val.region + '</option>');
+	                	 
+	                  }) 
+			      console.log('process success'+jsonData);
+		        },
+		         error:function(){
+			     console.log('process error');
+		        },
+		        
+		     }).responseText;
+		     
+		     var chartData = jQuery.parseJSON(jsonData);
+
+	            alert("Response Data is ####" + JSON.stringify(chartData));
+	           
+        
+        });
+        
+        
+        function selectLocation(){
+        	$("#location").fadeIn(5000);
+        	var selIndex = document.getElementById("regionList");
+        	
+        	var resouceid = selIndex.options[selIndex.selectedIndex].id;
+        	alert(resouceid);
+        	//alert($( "#regionList" ).val());
+        	
+        	var region = $( "#regionList" ).val();
+        	
+        	 var jsonData = $.ajax({
+		         url:'http://m2mdemo.cloudapp.net:5001/ReplenishmentService/getLocationByRegionId/'+resouceid,
+		         dataType:"json",
+		         type: "get",
+		         async : false,
+		         
+		         complete:function(){
+		         console.log('process complete')
+		        },
+	              success:function(loactionData,status){
+	            	   var select = $('#locationList');
+	            	  select.html('');
+	            	  select.append('<option id="0" selected="selected">--Select Location--</option>')
+	                  $.each(loactionData.LocationData, function(key, val) {
+	                	  //alert(val._id)
+	                	  select.append('<option id="' + val.resourceid + '">' + val.location + '</option>');
+	                	 
+	                  })  
+			      console.log('process success:::::::::'+loactionData);
+		        },
+		         error:function(){
+			     console.log('process error');
+		        },
+		        
+		     }).responseText;
+
+        	
+        }
+        
+function selectVMName(){
+	        $("#name").fadeIn(5000);
+        	var selIndex = document.getElementById("locationList");
+        	
+        	var resouceid = selIndex.options[selIndex.selectedIndex].id;
+        	alert(resouceid);
+        	//alert($( "#regionList" ).val());
+        	
+        	
+        	 var jsonData = $.ajax({
+		         url:'http://m2mdemo.cloudapp.net:5001/ReplenishmentService/getVMName/'+resouceid,
+		         dataType:"json",
+		         type: "get",
+		         async : false,
+		         
+		         complete:function(){
+		         console.log('process complete')
+		        },
+	              success:function(VMName,status){
+	            	   var select = $('#VMName');
+	            	  select.html('');
+	                  $.each(VMName.VMDetails, function(key, val) {
+	                	  //alert(val._id)
+	                	  select.append('<option id="' + val.resourceid + '">' + val.name + '</option>');
+	                	 
+	                  })  
+			      console.log('process success:VMName::::::::'+VMName);
+		        },
+		         error:function(){
+			     console.log('process error');
+		        },
+		        
+		     }).responseText;
+
+        	
+        }
+         
+        </script>
+</head>
+
+
+
+<body>
+<body style="" onload="loadValues()">
+	<div class="container" id="container" style="display: none">
+		<h>Vending Machine Replinshment Items</h>
+		<table><tr id="region"><td>
+		<!-- <div id="region"> -->
+			Select Region:&nbsp;</td><td> <select id="regionList"
+				onchange="selectLocation()">
+			
+			</select></td></tr>
+		<!-- </div> -->
+		<tr id="location"><td>
+		<!--<div id="location">-->
+			Select Location:&nbsp;&nbsp;</td><td> <select id="locationList"
+				onchange="selectVMName()">
+
+			</select></td></tr>
+		<!--</div>-->
+		<tr id="name"><td>
+		<!--<div id="name">-->
+			VM Name:&nbsp; </td><td><select id="VMName" onchange="itemName()">
+
+			</select></td></tr>
+		<!--</div>-->
+		</table>
+	</div>
+
+
+</body>
+</html>
